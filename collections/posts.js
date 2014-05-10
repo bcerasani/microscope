@@ -1,8 +1,17 @@
 Posts = new Meteor.Collection('posts');
 
+// verify permissions
 Posts.allow({
   update: ownsDocument,
   remove: ownsDocument
+});
+
+// restrict edits
+Posts.deny({
+  update: function(userId, post, fieldNames) {
+    // may only edit the following fields:
+    return (_.without(fieldNames, 'url', 'title').length > 0);
+  }
 })
 
 Meteor.methods({
