@@ -1,4 +1,4 @@
-Template.postSubmit.events({
+ Template.postSubmit.events({
   'submit form': function(e) {
     e.preventDefault();
 
@@ -8,15 +8,16 @@ Template.postSubmit.events({
       message: $(e.target).find('[name=message]').val()
     }
 
-    Meteor.call('post', post, function(err, id) {
-      if (err)
+    Meteor.call('post', post, function(error, id) {
+      if (error) {
         // display the error to the user
-        throwErrow(error.reason);
-        if (error.error === 302) {
+        throwError(error.reason);
+
+        if (error.error === 302)
           Router.go('postPage', {_id: error.details})
-        } else {
-          Router.go('postPage', {_id: id});
-        }
+      } else {
+        Router.go('postPage', {_id: id});
+      }
     });
   }
 });
