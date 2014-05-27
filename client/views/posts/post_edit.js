@@ -9,9 +9,9 @@ Template.postEdit.events({
       title: $(e.target).find('[name=title]').val()
     }
 
-    Posts.update(currentPostId, {$set: postProperties}, function(err) {
-      if (err) {
-        alert(err.reason);
+    Posts.update(currentPostId, {$set: postProperties}, function(error) {
+      if (error) {
+        Errors.throw(error.reason)
       } else {
         Router.go('postPage', {_id: currentPostId});
       }
