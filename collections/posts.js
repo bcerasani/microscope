@@ -18,20 +18,16 @@ Meteor.methods({
   post: function(postAttributes) {
     var user = Meteor.user();
     var postWithSameLink = Posts.findOne({url: postAttributes.url});
-
     // ensure the user is logged in
     if (!user)
       throw new Meteor.Error(401, "You need to login to post new stories");
-
     // ensure the post has a title
     if (!postAttributes.title)
       throw new Meteor.Error(422, 'Please fill in a headline');
-
     // check that there are no previous posts with the same link
     if (postAttributes.url && postWithSameLink) {
       throw new Meteor.Error(302, 'This link has already been posted', postWithSameLink._id);
     }
-
     // pick out the whitelisted keys
     var post = _.extend(_.pick(postAttributes, 'url', 'title', 'message'), {
       userId: user._id,
@@ -41,7 +37,6 @@ Meteor.methods({
       upvoters: [],
       votes: 0
     });
-
     // wait for 5 seconds
     if (! this.isSimulation) {
       var Future = Npm.require('fibers/future');
@@ -57,7 +52,6 @@ Meteor.methods({
   },
   upvote: function(postId) {
     var user = Meteor.user();
-
     // ensure the user is logged in
     if (!user)
       throw new Meteor.Error(401, "You need to login to upvote");
@@ -66,7 +60,10 @@ Meteor.methods({
       throw new Meteor.Error(402, "Post not found");
     if (_.include(post.upvoters, user._id))
       throw new Meteor.Error(422, "Already upvoted this post");
-    Posts.update(post._id, {
+    Posts.update({
+      _id: postId,
+      upvoters: {$ne: user._id}
+    }, {
       $addToSet: {upvoters: user._id},
       $inc: {votes: 1}
     });
