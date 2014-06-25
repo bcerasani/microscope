@@ -1,6 +1,6 @@
 <template name="postsList">
-  <div class="posts">
-    {{#each posts}}
+  <div class="posts" {{attributes}}>
+    {{#each postsWithRank}}
       {{> postItem}}
     {{/each}}
     {{#if nextPath}}
